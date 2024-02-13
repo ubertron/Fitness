@@ -63,7 +63,7 @@ class Activity:
         return self.date.strftime('%Y_%m_%d')
 
     @property
-    def name(self) -> str:
+    def file_name(self) -> str:
         return f"{self.activity_type.name}_{self.date_string}.activity"
 
 
@@ -93,7 +93,7 @@ class ActivityManager:
     def save(self, activity: Activity):
         if not os.path.isdir(self.DATA_FOLDER):
             os.makedirs(self.DATA_FOLDER)
-        pickle.dump(activity, open(os.path.join(self.DATA_FOLDER, activity.name), "wb"))
+        pickle.dump(activity, open(os.path.join(self.DATA_FOLDER, activity.file_name), "wb"))
 
     def format_activities(self):
         for x in self.activities:
@@ -109,20 +109,27 @@ class ActivityManager:
         plt.show()
 
 
+def time_delta(hours, minutes, seconds) -> datetime.timedelta:
+    return datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+
+
 def add_activities():
-    activity_manager = ActivityManager()
-    data = [datetime.date(2023, 1, 18), ActivityType.Running, datetime.timedelta(minutes=29, seconds=31), 4.66,
-            Location("Berkeley", "California", "USA")]
-    activity_manager.add_activity(*data)
-    data = [datetime.date(2022, 12, 11), ActivityType.Running, datetime.timedelta(minutes=32, seconds=40), 5.01,
-            Location("Bingley", "West Yorkshire", "UK")]
-    activity_manager.add_activity(*data)
-    data = [datetime.date(2022, 12, 23), ActivityType.Running, datetime.timedelta(minutes=26, seconds=2), 3.6,
-            Location("Bingley", "West Yorkshire", "UK")]
-    activity_manager.add_activity(*data)
-    activity_manager.format_activities()
+    BERKELEY = Location("Berkeley", "California", "USA")
+    BINGLEY = Location("Bingley", "West Yorkshire", "UK")
+    am = ActivityManager()
+
+    am.add_activity(datetime.date(2023, 1, 18), ActivityType.Running, time_delta(0, 29, 31), 4.66, BERKELEY)
+    am.add_activity(datetime.date(2022, 12, 11), ActivityType.Running, time_delta(0, 32, 40), 5.01, BINGLEY)
+    am.add_activity(datetime.date(2022, 12, 23), ActivityType.Running, time_delta(0, 26, 2), 3.6, BINGLEY)
+    am.add_activity(datetime.date(2023, 1, 24), ActivityType.Running, time_delta(0, 26, 14), 3.6, BERKELEY)
+    am.add_activity(datetime.date(2023, 1, 26), ActivityType.Running, time_delta(0, 25, 4), 4.26, BERKELEY)
+    am.add_activity(datetime.date(2023, 2, 5), ActivityType.Running, time_delta(0, 45, 56), 6.56, BERKELEY)
+    am.add_activity(datetime.date(2023, 2, 8), ActivityType.Running, time_delta(0, 18, 46), 3.38, BERKELEY)
+    am.add_activity(datetime.date(2023, 2, 15), ActivityType.Running, time_delta(0, 18, 17), 3.39, BERKELEY)
+    am.add_activity(datetime.date(2023, 2, 23), ActivityType.Running, time_delta(0, 18, 24), 3.41, BERKELEY)
+    am.format_activities()
 
 
 if __name__ == "__main__":
-    # add_activities()
+    add_activities()
     ActivityManager().plot_running()
